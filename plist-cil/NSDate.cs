@@ -24,6 +24,7 @@
 // SOFTWARE.
 using System;
 using System.Text;
+using Claunia.PropertyList.Origin;
 
 namespace Claunia.PropertyList
 {
@@ -102,7 +103,7 @@ namespace Claunia.PropertyList
         /// </summary>
         /// <param name="textRepresentation">The textual representation of the date (ISO 8601 format)</param>
         /// <exception cref="FormatException">When the date could not be parsed, i.e. it does not match the expected pattern.</exception>
-        public NSDate(String textRepresentation)
+        public NSDate(String textRepresentation, INsOrigin origin = null) : base(origin)
         {
             date = ParseDateString(textRepresentation);
         }

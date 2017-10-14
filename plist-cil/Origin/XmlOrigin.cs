@@ -5,21 +5,24 @@ using System.Text;
 
 namespace Claunia.PropertyList.Origin
 {
-  class XmlOrigin : INsOrigin
-  {
-    public OriginType OriginType
+    class XmlOrigin : INsOrigin
     {
-      get { throw new NotImplementedException(); }
-    }
+        public XmlOrigin(int location, int length, int linePosition, int lineNumber)
+        {
+            Location = location;
+            Length = length;
+            LinePosition = linePosition;
+            LineNumber = lineNumber;
+        }
 
-    public int Location
-    {
-      get { throw new NotImplementedException(); }
-    }
+        public OriginType OriginType => OriginType.XmlText;
 
-    public int Length
-    {
-      get { throw new NotImplementedException(); }
+        public int Location { get; }
+
+        public int Length { get; }
+
+        public int LineNumber { get; }
+
+        public int LinePosition { get; }
     }
-  }
 }

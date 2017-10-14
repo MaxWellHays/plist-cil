@@ -404,18 +404,18 @@ namespace Claunia.PropertyList
             if (this is NSNumber)
             {
                 NSNumber num = (NSNumber)this;
-                switch (num.GetNSNumberType())
+                switch (num.Type)
                 {
-                    case NSNumber.INTEGER:
+                    case NumberType.Integer:
                         {
                             long longVal = num.ToLong();
                             if (longVal > int.MaxValue || longVal < int.MinValue)
                                 return longVal;
                             return num.ToInt();
                         }
-                    case NSNumber.REAL:
+                    case NumberType.Real:
                             return num.ToDouble();
-                    case NSNumber.BOOLEAN:
+                    case NumberType.Boolean:
                             return num.ToBool();
                     default :
                             return num.ToDouble();

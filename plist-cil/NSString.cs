@@ -24,6 +24,7 @@
 // SOFTWARE.
 using System;
 using System.Text;
+using Claunia.PropertyList.Origin;
 
 namespace Claunia.PropertyList
 {
@@ -52,7 +53,7 @@ namespace Claunia.PropertyList
         /// Creates a NSString from a string.
         /// </summary>
         /// <param name="text">The string that will be contained in the NSString.</param>
-        public NSString(string text)
+        public NSString(string text, INsOrigin origin = null) : base(origin)
         {
             content = text;
         }

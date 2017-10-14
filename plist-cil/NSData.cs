@@ -25,6 +25,7 @@
 using System;
 using System.IO;
 using System.Text;
+using Claunia.PropertyList.Origin;
 
 namespace Claunia.PropertyList
 {
@@ -51,7 +52,7 @@ namespace Claunia.PropertyList
         /// </summary>
         /// <param name="base64">The Base64 encoded contents of the NSData object.</param>
         /// <exception cref="FormatException">When the given string is not a proper Base64 formatted string.</exception>
-        public NSData(string base64)
+        public NSData(string base64, INsOrigin origin = null) : base(origin)
         {
             bytes = Convert.FromBase64String(base64);
         }

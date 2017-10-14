@@ -238,13 +238,13 @@ namespace Claunia.PropertyList
                     {
                         //integer
                         int length = (int)Math.Pow(2, objInfo);
-                        return new NSNumber(CopyOfRange(bytes, offset + 1, offset + 1 + length), NSNumber.INTEGER);
+                        return new NSNumber(CopyOfRange(bytes, offset + 1, offset + 1 + length), NumberType.Integer);
                     }
                 case 0x2:
                     {
                         //real
                         int length = (int)Math.Pow(2, objInfo);
-                        return new NSNumber(CopyOfRange(bytes, offset + 1, offset + 1 + length), NSNumber.REAL);
+                        return new NSNumber(CopyOfRange(bytes, offset + 1, offset + 1 + length), NumberType.Real);
                     }
                 case 0x3:
                     {

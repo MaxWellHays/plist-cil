@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using Claunia.PropertyList.Origin;
 
 namespace Claunia.PropertyList
 {
@@ -74,10 +75,10 @@ namespace Claunia.PropertyList
 
             using (XmlReader reader = XmlReader.Create(str, settings))
             {
-                doc = XDocument.Load(reader);
+                doc = XDocument.Load(reader, LoadOptions.SetLineInfo);
             }
 
-            return ParseDocument(doc);
+            return ParseDocument(doc, new XmlOriginFactory(str));
         }
 
         /// <summary>
@@ -85,7 +86,7 @@ namespace Claunia.PropertyList
         /// </summary>
         /// <returns>The root NSObject of the property list contained in the XML document.</returns>
         /// <param name="doc">The XML document.</param>
-        static NSObject ParseDocument(XDocument doc)
+        static NSObject ParseDocument(XDocument doc, XmlOriginFactory originFactory)
         {
             var docType = doc.Nodes().OfType<XDocumentType>().SingleOrDefault();
 
@@ -118,7 +119,7 @@ namespace Claunia.PropertyList
                 //Root NSObject not wrapped in plist-tag
                 rootNode = doc.Root;
 
-            return ParseObject(rootNode);
+            return ParseObject(rootNode, originFactory);
         }
 
         /// <summary>
@@ -126,11 +127,12 @@ namespace Claunia.PropertyList
         /// </summary>
         /// <returns>The corresponding NSObject.</returns>
         /// <param name="n">The XML node.</param>
-        static NSObject ParseObject(XElement n)
+        static NSObject ParseObject(XElement n, XmlOriginFactory originFactory)
         {
+            var xmlOrigin = originFactory.GetOrigin(n);
             if (n.Name.LocalName.Equals("dict"))
             {
-                NSDictionary dict = new NSDictionary();
+                NSDictionary dict = new NSDictionary(xmlOrigin);
                 List<XElement> children = n.Elements().ToList();
                 for (int i = 0; i < children.Count; i += 2)
                 {
@@ -139,33 +141,33 @@ namespace Claunia.PropertyList
 
                     string keyString = GetNodeTextContents(key);
 
-                    dict.Add(keyString, ParseObject(val));
+                    dict.Add(keyString, ParseObject(val, originFactory));
                 }
                 return dict;
             }
             if (n.Name.LocalName.Equals("array"))
             {
                 List<XElement> children = n.Elements().ToList();
-                NSArray array = new NSArray(children.Count);
+                NSArray array = new NSArray(children.Count, xmlOrigin);
                 for (int i = 0; i < children.Count; i++)
                 {
-                    array.Add(ParseObject(children[i]));
+                    array.Add(ParseObject(children[i], originFactory));
                 }
                 return array;
             }
             if (n.Name.LocalName.Equals("true"))
-                return new NSNumber(true);
+                return new NSNumber(true, xmlOrigin);
             if (n.Name.LocalName.Equals("false"))
-                return new NSNumber(false);
+                return new NSNumber(false, xmlOrigin);
             if (n.Name.LocalName.Equals("integer"))
-                return new NSNumber(GetNodeTextContents(n), NSNumber.INTEGER);
+                return new NSNumber(GetNodeTextContents(n), NumberType.Integer, xmlOrigin);
             if (n.Name.LocalName.Equals("real"))
-                return new NSNumber(GetNodeTextContents(n), NSNumber.REAL);
+                return new NSNumber(GetNodeTextContents(n), NumberType.Real, xmlOrigin);
             if (n.Name.LocalName.Equals("string"))
-                return new NSString(GetNodeTextContents(n));
+                return new NSString(GetNodeTextContents(n), xmlOrigin);
             if (n.Name.LocalName.Equals("data"))
-                return new NSData(GetNodeTextContents(n));
-            return n.Name.LocalName.Equals("date") ? new NSDate(GetNodeTextContents(n)) : null;
+                return new NSData(GetNodeTextContents(n), xmlOrigin);
+            return n.Name.LocalName.Equals("date") ? new NSDate(GetNodeTextContents(n), xmlOrigin) : null;
         }
 
         /// <summary>

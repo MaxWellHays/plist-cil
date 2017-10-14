@@ -52,7 +52,7 @@ namespace plistcil.test
         [Fact]
         public static void TestIssue16()
         {
-            float x = ((NSNumber)PropertyListParser.Parse(new FileInfo("test-files/issue16.plist"))).floatValue();
+            float x = ((NSNumber)PropertyListParser.Parse(new FileInfo("test-files/issue16.plist"))).FloatValue;
             Assert.True(x == (float)2.71828);
         }
 

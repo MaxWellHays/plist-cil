@@ -84,20 +84,20 @@ For converting a file into another format there exist convenience methods in the
 				NSNumber num = (NSNumber)param;
 				switch(num.GetNSNumberType())
 				{
-					case NSNumber.BOOLEAN:
+					case NumberType.Boolean:
 					{
 						boolean bool = num.ToBool();
 						// ...
 						break;
 					}
-					case NSNumber.INTEGER:
+					case NumberType.Integer:
 					{
 						long l = num.ToLong();
 						// or int i = num.ToInt();
 						// ...
 						break;
 					}
-					case NSNumber.REAL:
+					case NumberType.Real:
 					{
 						double d = num.ToDouble();
 						// ...

@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Claunia.PropertyList.Origin;
 
 namespace Claunia.PropertyList
 {
@@ -52,7 +53,7 @@ namespace Claunia.PropertyList
         /// <summary>
         /// Creates a new empty NSDictionary.
         /// </summary>
-        public NSDictionary()
+        public NSDictionary(INsOrigin nsOrigin = null) : base(nsOrigin)
         {
             dict = new Dictionary<string, NSObject>();
             keys = new Dictionary<string, NSString>();
@@ -211,7 +212,7 @@ namespace Claunia.PropertyList
                 if (o.GetType().Equals(typeof(NSNumber)))
                 {
                     NSNumber num = (NSNumber)o;
-                    if (num.isInteger() && num.ToInt() == val)
+                    if (num.IsInteger && num.ToInt() == val)
                         return true;
                 }
             }
@@ -230,7 +231,7 @@ namespace Claunia.PropertyList
                 if (o.GetType().Equals(typeof(NSNumber)))
                 {
                     NSNumber num = (NSNumber)o;
-                    if (num.isReal() && num.ToDouble() == val)
+                    if (num.IsReal && num.ToDouble() == val)
                         return true;
                 }
             }
@@ -249,7 +250,7 @@ namespace Claunia.PropertyList
                 if (o.GetType().Equals(typeof(NSNumber)))
                 {
                     NSNumber num = (NSNumber)o;
-                    if (num.isBoolean() && num.ToBool() == val)
+                    if (num.IsBoolean && num.ToBool() == val)
                         return true;
                 }
             }

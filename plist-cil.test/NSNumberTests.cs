@@ -15,8 +15,8 @@ namespace plistcil.test
         [Fact]
         public static void NSNumberConstructorTest()
         {
-            var number = new NSNumber("10032936613", NSNumber.INTEGER);
-            Assert.Equal(NSNumber.INTEGER, number.GetNSNumberType());
+            var number = new NSNumber("10032936613", NumberType.Integer);
+            Assert.Equal(NumberType.Integer, number.Type);
             Assert.Equal(10032936613, number.ToObject());
         }
 
@@ -32,7 +32,7 @@ namespace plistcil.test
         public static void ParseNumberEnTest()
         {
             var number = new NSNumber("7200.000001");
-            Assert.True(number.isReal());
+            Assert.True(number.IsReal);
             Assert.Equal(7200.000001d, number.ToDouble());
         }
 
@@ -44,7 +44,7 @@ namespace plistcil.test
             // <key>TimeZoneOffsetFromUTC</key>
             // <real>7200.000000</real>
             var number = new NSNumber("7200.000001");
-            Assert.True(number.isReal());
+            Assert.True(number.IsReal);
             Assert.Equal(7200.000001d, number.ToDouble());
         }
 
@@ -55,8 +55,8 @@ namespace plistcil.test
             // As seen in a real property list:
             // <key>TimeZoneOffsetFromUTC</key>
             // <real>7200.000000</real>
-            var number = new NSNumber("7200.000000", NSNumber.REAL);
-            Assert.True(number.isReal());
+            var number = new NSNumber("7200.000000", NumberType.Real);
+            Assert.True(number.IsReal);
             Assert.Equal(7200d, number.ToDouble());
         }
 
@@ -67,8 +67,8 @@ namespace plistcil.test
             // As seen in a real property list:
             // <key>TimeZoneOffsetFromUTC</key>
             // <real>7200.000000</real>
-            var number = new NSNumber("7200.000000", NSNumber.REAL);
-            Assert.True(number.isReal());
+            var number = new NSNumber("7200.000000", NumberType.Real);
+            Assert.True(number.IsReal);
             Assert.Equal(7200d, number.ToDouble());
         }
 #endif

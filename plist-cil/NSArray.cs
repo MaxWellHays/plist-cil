@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using Claunia.PropertyList.Origin;
 
 namespace Claunia.PropertyList
 {
@@ -42,7 +43,7 @@ namespace Claunia.PropertyList
         /// Creates an empty array of the given length.
         /// </summary>
         /// <param name="length">The number of elements this array will be able to hold.</param>
-        public NSArray(int length)
+        public NSArray(int length, INsOrigin origin = null) : base(origin)
         {
             array = new List<NSObject>(length);
         }
