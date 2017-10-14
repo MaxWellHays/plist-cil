@@ -27,6 +27,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using Claunia.PropertyList.Origin;
 
 namespace Claunia.PropertyList
 {
@@ -474,6 +475,17 @@ namespace Claunia.PropertyList
         /// <returns><c>true</c> if the specified <see cref="Claunia.PropertyList.NSObject"/> is equal to the current
         /// <see cref="Claunia.PropertyList.NSObject"/>; otherwise, <c>false</c>.</returns>
         public abstract bool Equals(NSObject obj);
+
+        #region Origin
+
+        public readonly INsOrigin Origin;
+
+        protected NSObject(INsOrigin origin = null)
+        {
+            Origin = origin;
+        }
+
+        #endregion
     }
 }
 
