@@ -48,6 +48,11 @@ namespace Claunia.PropertyList
             array = new List<NSObject>(length);
         }
 
+        public NSArray(NSObject[] a, INsOrigin origin = null) : base(origin)
+        {
+            array = new List<NSObject>(a);
+        }
+
         /// <summary>
         /// Creates a array from an existing one
         /// </summary>

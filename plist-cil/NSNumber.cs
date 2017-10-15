@@ -121,7 +121,7 @@ namespace Claunia.PropertyList
         /// <seealso cref="bool.Parse(string)"/>
         /// <seealso cref="long.Parse(string)"/>
         /// <seealso cref="double.Parse(string, IFormatProvider)"/>
-        public NSNumber(string text)
+        public NSNumber(string text, INsOrigin nsOrigin = null) : base(nsOrigin)
         {
             if (text == null)
                 throw new ArgumentException("The given string is null and cannot be parsed as number.");

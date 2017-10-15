@@ -42,7 +42,7 @@ namespace Claunia.PropertyList
         /// Creates the NSData object from the binary representation of it.
         /// </summary>
         /// <param name="bytes">The raw data contained in the NSData object.</param>
-        public NSData(byte[] bytes)
+        public NSData(byte[] bytes, INsOrigin origin = null) : base(origin)
         {
             this.bytes = bytes;
         }

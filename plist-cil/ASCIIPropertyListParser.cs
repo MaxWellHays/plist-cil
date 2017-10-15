@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Text;
 using System.Runtime.CompilerServices;
+using Claunia.PropertyList.Origin;
 
 namespace Claunia.PropertyList
 {
@@ -477,21 +478,22 @@ namespace Claunia.PropertyList
                     }
                 case QUOTEDSTRING_BEGIN_TOKEN:
                     {
+                        int startIndex = this.index;
                         string quotedString = ParseQuotedString();
                         //apple dates are quoted strings of length 20 and after the 4 year digits a dash is found
                         if (quotedString.Length == 20 && quotedString[4] == DATE_DATE_FIELD_DELIMITER)
                         {
                             try
                             {
-                                return new NSDate(quotedString);
+                                return new NSDate(quotedString, BinaryOrigin.FromRange(startIndex, this.index));
                             }
                             catch (Exception)
                             {
                                 //not a date? --> return string
-                                return new NSString(quotedString);
+                                return new NSString(quotedString, BinaryOrigin.FromRange(startIndex, this.index));
                             }
                         }
-                        return new NSString(quotedString);
+                        return new NSString(quotedString, BinaryOrigin.FromRange(startIndex, this.index));
                     }
                 default:
                     {
@@ -504,8 +506,9 @@ namespace Claunia.PropertyList
                         else
                         {
                             //non-numerical -> string or boolean
+                            var startIndex = this.index;
                             string parsedString = ParseString();
-                            return new NSString(parsedString);
+                            return new NSString(parsedString, BinaryOrigin.FromRange(startIndex, this.index));
                         }
                     }
             }
@@ -519,6 +522,7 @@ namespace Claunia.PropertyList
         NSArray ParseArray()
         {
             //Skip begin token
+            int startPosition = this.index;
             Skip();
             SkipWhitespacesAndComments();
             List<NSObject> objects = new List<NSObject>();
@@ -538,7 +542,7 @@ namespace Claunia.PropertyList
             }
             //parse end token
             Read(ARRAY_END_TOKEN);
-            return new NSArray(objects.ToArray());
+            return new NSArray(objects.ToArray(), BinaryOrigin.FromRange(startPosition, this.index));
         }
 
         /// <summary>
@@ -549,9 +553,11 @@ namespace Claunia.PropertyList
         NSDictionary ParseDictionary()
         {
             //Skip begin token
+            var origin = new BinaryOrigin(this.index, 0);
+
             Skip();
             SkipWhitespacesAndComments();
-            NSDictionary dict = new NSDictionary();
+            NSDictionary dict = new NSDictionary(origin);
             while (!Accept(DICTIONARY_END_TOKEN))
             {
                 //Parse key
@@ -574,6 +580,9 @@ namespace Claunia.PropertyList
             }
             //skip end token
             Skip();
+
+            origin.SetEndPosition(this.index);
+
             return dict;
         }
 
@@ -587,6 +596,7 @@ namespace Claunia.PropertyList
         {
             NSObject obj = null;
             //Skip begin token
+            var origin = new BinaryOrigin(this.index, 0);
             Skip();
             if (Accept(DATA_GSOBJECT_BEGIN_TOKEN))
             {
@@ -598,9 +608,9 @@ namespace Claunia.PropertyList
                     Skip();
                     Expect(DATA_GSBOOL_TRUE_TOKEN, DATA_GSBOOL_FALSE_TOKEN);
                     if (Accept(DATA_GSBOOL_TRUE_TOKEN))
-                        obj = new NSNumber(true);
+                        obj = new NSNumber(true, origin);
                     else
-                        obj = new NSNumber(false);
+                        obj = new NSNumber(false, origin);
                     //Skip the parsed boolean token
                     Skip();
                 }
@@ -609,14 +619,14 @@ namespace Claunia.PropertyList
                     //Date
                     Skip();
                     string dateString = ReadInputUntil(DATA_END_TOKEN);
-                    obj = new NSDate(dateString);
+                    obj = new NSDate(dateString, origin);
                 }
                 else if (Accept(DATA_GSINT_BEGIN_TOKEN, DATA_GSREAL_BEGIN_TOKEN))
                 {
                     //Number
                     Skip();
                     string numberString = ReadInputUntil(DATA_END_TOKEN);
-                    obj = new NSNumber(numberString);
+                    obj = new NSNumber(numberString, origin);
                 }
                 //parse data end token
                 Read(DATA_END_TOKEN);
@@ -634,12 +644,13 @@ namespace Claunia.PropertyList
                     int byteValue = Convert.ToInt32(byteString, 16);
                     bytes[i] = (byte)byteValue;
                 }
-                obj = new NSData(bytes);
+                obj = new NSData(bytes, origin);
 
                 //skip end token
                 Skip();
             }
 
+            origin.SetEndPosition(this.index);
             return obj;
         }
 
@@ -649,19 +660,20 @@ namespace Claunia.PropertyList
         /// <returns>A NSDate if the string represents such an object. Otherwise a NSString is returned.</returns>
         NSObject ParseDateString()
         {
+            var startIndex = this.index;
             string numericalString = ParseString();
             if (numericalString.Length > 4 && numericalString[4] == DATE_DATE_FIELD_DELIMITER)
             {
                 try
                 {
-                    return new NSDate(numericalString);
+                    return new NSDate(numericalString, BinaryOrigin.FromRange(startIndex, this.index));
                 }
                 catch (Exception)
                 {
                     //An exception occurs if the string is not a date but just a string
                 }
             }
-            return new NSString(numericalString);
+            return new NSString(numericalString, BinaryOrigin.FromRange(startIndex, this.index));
         }
 
         /// <summary>
@@ -775,27 +787,27 @@ namespace Claunia.PropertyList
             char c = iterator.Current;
             if (c == '\\')
             {
-                return Encoding.UTF8.GetString(new byte[]{ 0, (byte)'\\' });
+                return Encoding.UTF8.GetString(new byte[] { 0, (byte)'\\' });
             }
             else if (c == '"')
             {
-                return Encoding.UTF8.GetString(new byte[]{ 0, (byte)'\"' });
+                return Encoding.UTF8.GetString(new byte[] { 0, (byte)'\"' });
             }
             else if (c == 'b')
             {
-                return Encoding.UTF8.GetString(new byte[]{ 0, (byte)'\b' });
+                return Encoding.UTF8.GetString(new byte[] { 0, (byte)'\b' });
             }
             else if (c == 'n')
             {
-                return Encoding.UTF8.GetString(new byte[]{ 0, (byte)'\n' });
+                return Encoding.UTF8.GetString(new byte[] { 0, (byte)'\n' });
             }
             else if (c == 'r')
             {
-                return Encoding.UTF8.GetString(new byte[]{ 0, (byte)'\r' });
+                return Encoding.UTF8.GetString(new byte[] { 0, (byte)'\r' });
             }
             else if (c == 't')
             {
-                return Encoding.UTF8.GetString(new byte[]{ 0, (byte)'\t' });
+                return Encoding.UTF8.GetString(new byte[] { 0, (byte)'\t' });
             }
             else if (c == 'U' || c == 'u')
             {
