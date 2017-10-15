@@ -23,11 +23,11 @@ namespace Claunia.PropertyList.Origin
             var currentNodePositionInfo = GetPositionInfo(xNode);
             var nextNodePositionInfo = GetPositionInfo(xNode.NextNode);
 
-            var currentNodeStreamPosition = GetPositionInStream(currentNodePositionInfo.lineNumber, currentNodePositionInfo.linePosition);
-            var nextNodeStreamPosition = GetPositionInStream(nextNodePositionInfo.lineNumber, nextNodePositionInfo.linePosition);
+            var currentNodeStreamPosition = GetPositionInStream(currentNodePositionInfo.Item1, currentNodePositionInfo.Item2);
+            var nextNodeStreamPosition = GetPositionInStream(nextNodePositionInfo.Item1, nextNodePositionInfo.Item2);
 
             return new XmlOrigin((int)currentNodeStreamPosition, (int)(nextNodeStreamPosition - currentNodeStreamPosition),
-                currentNodePositionInfo.linePosition, currentNodePositionInfo.lineNumber);
+                currentNodePositionInfo.Item2, currentNodePositionInfo.Item1);
         }
 
         private readonly List<long> streamPositionAtLineNumber = new List<long> { 0 };
@@ -70,14 +70,14 @@ namespace Claunia.PropertyList.Origin
             return GetPositionInStream(lineNumber, linePosition);
         }
 
-        private static (int lineNumber, int linePosition) GetPositionInfo(XNode xNode)
+        private static Tuple<int, int> GetPositionInfo(XNode xNode)
         {
             IXmlLineInfo xmlLineInfo = xNode;
             if (!xmlLineInfo.HasLineInfo())
             {
                 throw new ArgumentException();
             }
-            return (xmlLineInfo.LineNumber - 1, xmlLineInfo.LinePosition - 1);
+            return Tuple.Create(xmlLineInfo.LineNumber - 1, xmlLineInfo.LinePosition - 1);
         }
     }
 }
