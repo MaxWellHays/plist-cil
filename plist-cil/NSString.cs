@@ -43,7 +43,7 @@ namespace Claunia.PropertyList
         /// <param name="bytes">The binary representation.</param>
         /// <param name="encoding">The encoding of the binary representation, the name of a supported charset.</param>
         /// <exception cref="ArgumentException">The encoding charset is invalid or not supported by the underlying platform.</exception>
-        public NSString(byte[] bytes, String encoding)
+        public NSString(byte[] bytes, String encoding, INsOrigin origin = null) : base(origin)
         {
             Encoding enc = Encoding.GetEncoding(encoding);
             content = enc.GetString(bytes);

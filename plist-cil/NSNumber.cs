@@ -72,7 +72,7 @@ namespace Claunia.PropertyList
         /// <param name="type">The type of number</param>
         /// <seealso cref="NumberType.Integer"/>
         /// <seealso cref="NumberType.Real"/>
-        public NSNumber(byte[] bytes, NumberType type)
+        public NSNumber(byte[] bytes, NumberType type, INsOrigin origin = null) : base(origin)
         {
             switch (type)
             {

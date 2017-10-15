@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.Text;
+using Claunia.PropertyList.Origin;
 
 namespace Claunia.PropertyList
 {
@@ -57,7 +58,7 @@ namespace Claunia.PropertyList
         /// Creates an empty set.
         /// </summary>
         /// <param name="ordered">Should the set be ordered on operations?</param>
-        public NSSet(bool ordered)
+        public NSSet(bool ordered, INsOrigin origin) : base(origin)
         {
             this.ordered = ordered;
             set = new List<NSObject>();
@@ -68,7 +69,7 @@ namespace Claunia.PropertyList
         /// Creates a set and fill it with the given objects.
         /// </summary>
         /// <param name="objects">The objects to populate the set.</param>
-        public NSSet(params NSObject[] objects)
+        public NSSet(INsOrigin origin, params NSObject[] objects) : base(origin)
         {
             set = new List<NSObject>(objects);
         }
@@ -78,7 +79,7 @@ namespace Claunia.PropertyList
         /// </summary>
         /// <param name="objects">The objects to populate the set.</param>
         /// <param name="ordered">Should the set be ordered on operations?</param>
-        public NSSet(bool ordered, params NSObject[] objects)
+        public NSSet(bool ordered, INsOrigin origin, params NSObject[] objects) : base(origin)
         {
             this.ordered = ordered;
             set = new List<NSObject>(objects);

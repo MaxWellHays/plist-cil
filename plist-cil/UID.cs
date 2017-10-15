@@ -25,6 +25,7 @@
 using System;
 using System.Linq;
 using System.Text;
+using Claunia.PropertyList.Origin;
 
 namespace Claunia.PropertyList
 {
@@ -43,7 +44,7 @@ namespace Claunia.PropertyList
         /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="bytes">Bytes.</param>
-        public UID(String name, byte[] bytes)
+        public UID(String name, byte[] bytes, INsOrigin origin) : base(origin)
         {
             if(bytes.Length != 1 && bytes.Length != 2 && bytes.Length != 4 && bytes.Length != 8)
                 throw new ArgumentException("Type argument is not valid.");
@@ -56,7 +57,7 @@ namespace Claunia.PropertyList
         /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="number">Unsigned 8-bit number.</param>
-        public UID(String name, byte number)
+        public UID(String name, byte number, INsOrigin origin) : base(origin)
         {
             this.name = name;
             this.bytes = new[] { number };
@@ -67,7 +68,7 @@ namespace Claunia.PropertyList
         /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="number">Unsigned 8-bit number.</param>
-        public UID(String name, sbyte number)
+        public UID(String name, sbyte number, INsOrigin origin) : base(origin)
         {
             this.name = name;
             this.bytes = new[] { (byte)number };
@@ -78,7 +79,7 @@ namespace Claunia.PropertyList
         /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="number">Unsigned 16-bit number.</param>
-        public UID(String name, ushort number)
+        public UID(String name, ushort number, INsOrigin origin) : base(origin)
         {
             this.name = name;
             if(number <= byte.MaxValue)
@@ -92,7 +93,7 @@ namespace Claunia.PropertyList
         /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="number">Signed 16-bit number.</param>
-        public UID(String name, short number)
+        public UID(String name, short number, INsOrigin origin) : base(origin)
         {
             this.name = name;
             if(number >= sbyte.MinValue && number <= sbyte.MaxValue)
@@ -106,7 +107,7 @@ namespace Claunia.PropertyList
         /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="number">Unsigned 32-bit number.</param>
-        public UID(String name, uint number)
+        public UID(String name, uint number, INsOrigin origin) : base(origin)
         {
             this.name = name;
             if(number <= byte.MaxValue)
@@ -122,7 +123,7 @@ namespace Claunia.PropertyList
         /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="number">Signed 32-bit number.</param>
-        public UID(String name, int number)
+        public UID(String name, int number, INsOrigin origin) : base(origin)
         {
             this.name = name;
             if(number >= sbyte.MinValue && number <= sbyte.MaxValue)
@@ -138,7 +139,7 @@ namespace Claunia.PropertyList
         /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="number">Unsigned 64-bit number.</param>
-        public UID(String name, ulong number)
+        public UID(String name, ulong number, INsOrigin origin) : base(origin)
         {
             this.name = name;
             if(number <= byte.MaxValue)
@@ -156,7 +157,7 @@ namespace Claunia.PropertyList
         /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="number">Signed 64-bit number.</param>
-        public UID(String name, long number)
+        public UID(String name, long number, INsOrigin origin) : base(origin)
         {
             this.name = name;
             if(number >= sbyte.MinValue && number <= sbyte.MaxValue)

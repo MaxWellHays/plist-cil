@@ -26,6 +26,7 @@ using System;
 using System.Diagnostics;
 using System.Text;
 using System.IO;
+using Claunia.PropertyList.Origin;
 
 namespace Claunia.PropertyList
 {
@@ -201,12 +202,12 @@ namespace Claunia.PropertyList
                             case 0x8:
                                 {
                                     //false
-                                    return new NSNumber(false);
+                                    return new NSNumber(false, new BinaryOrigin(offset, 1));
                                 }
                             case 0x9:
                                 {
                                     //true
-                                    return new NSNumber(true);
+                                    return new NSNumber(true, new BinaryOrigin(offset, 1));
                                 }
                             case 0xC:
                                 {
@@ -238,13 +239,13 @@ namespace Claunia.PropertyList
                     {
                         //integer
                         int length = (int)Math.Pow(2, objInfo);
-                        return new NSNumber(CopyOfRange(bytes, offset + 1, offset + 1 + length), NumberType.Integer);
+                        return new NSNumber(CopyOfRange(bytes, offset + 1, offset + 1 + length), NumberType.Integer, new BinaryOrigin(offset, length));
                     }
                 case 0x2:
                     {
                         //real
                         int length = (int)Math.Pow(2, objInfo);
-                        return new NSNumber(CopyOfRange(bytes, offset + 1, offset + 1 + length), NumberType.Real);
+                        return new NSNumber(CopyOfRange(bytes, offset + 1, offset + 1 + length), NumberType.Real, new BinaryOrigin(offset, length));
                     }
                 case 0x3:
                     {
@@ -253,7 +254,7 @@ namespace Claunia.PropertyList
                         {
                             throw new PropertyListFormatException("The given binary property list contains a date object of an unknown type (" + objInfo + ")");
                         }
-                        return new NSDate(CopyOfRange(bytes, offset + 1, offset + 9));
+                        return new NSDate(CopyOfRange(bytes, offset + 1, offset + 9), new BinaryOrigin(offset, 9));
                     }
                 case 0x4:
                     {
@@ -262,7 +263,7 @@ namespace Claunia.PropertyList
                         int length = lengthAndOffset[0];
                         int dataoffset = lengthAndOffset[1];
 
-                        return new NSData(CopyOfRange(bytes, offset + dataoffset, offset + dataoffset + length));
+                        return new NSData(CopyOfRange(bytes, offset + dataoffset, offset + dataoffset + length), new BinaryOrigin(offset + dataoffset, length));
                     }
                 case 0x5:
                     {
@@ -271,7 +272,7 @@ namespace Claunia.PropertyList
                         int length = lengthAndOffset[0]; //Each character is 1 byte
                         int stroffset = lengthAndOffset[1];
 
-                        return new NSString(CopyOfRange(bytes, offset + stroffset, offset + stroffset + length), "ASCII");
+                        return new NSString(CopyOfRange(bytes, offset + stroffset, offset + stroffset + length), "ASCII", new BinaryOrigin(offset + stroffset, length));
                     }
                 case 0x6:
                     {
@@ -283,7 +284,7 @@ namespace Claunia.PropertyList
                         //UTF-16 characters can have variable length, but the Core Foundation reference implementation
                         //assumes 2 byte characters, thus only covering the Basic Multilingual Plane
                         length *= 2;
-                        return new NSString(CopyOfRange(bytes, offset + stroffset, offset + stroffset + length), "UTF-16BE");
+                        return new NSString(CopyOfRange(bytes, offset + stroffset, offset + stroffset + length), "UTF-16BE", new BinaryOrigin(offset + stroffset, length));
                     }
                 case 0x7:
                     {
@@ -294,13 +295,13 @@ namespace Claunia.PropertyList
                         //UTF-8 characters can have variable length, so we need to calculate the byte length dynamically
                         //by reading the UTF-8 characters one by one
                         int length = CalculateUtf8StringLength(bytes, offset + strOffset, characters);
-                        return new NSString(CopyOfRange(bytes, offset + strOffset, offset + strOffset + length), "UTF-8");
+                        return new NSString(CopyOfRange(bytes, offset + strOffset, offset + strOffset + length), "UTF-8", new BinaryOrigin(offset + strOffset, length));
                     }
                 case 0x8:
                     {
                         //UID (v1.0 and later)
                         int length = objInfo + 1;
-                        return new UID(obj.ToString(), CopyOfRange(bytes, offset + 1, offset + 1 + length));
+                        return new UID(obj.ToString(), CopyOfRange(bytes, offset + 1, offset + 1 + length), new BinaryOrigin(offset + 1, length));
                     }
                 case 0xA:
                     {
@@ -309,7 +310,7 @@ namespace Claunia.PropertyList
                         int length = lengthAndOffset[0];
                         int arrayOffset = lengthAndOffset[1];
 
-                        NSArray array = new NSArray(length);
+                        NSArray array = new NSArray(length, new BinaryOrigin(offset + arrayOffset, length * objectRefSize));
                         for (int i = 0; i < length; i++)
                         {
                             int objRef = (int)ParseUnsignedInt(CopyOfRange(bytes,
@@ -327,7 +328,7 @@ namespace Claunia.PropertyList
                         int length = lengthAndOffset[0];
                         int contentOffset = lengthAndOffset[1];
 
-                        NSSet set = new NSSet(true);
+                        NSSet set = new NSSet(true, new BinaryOrigin(offset + contentOffset, length * objectRefSize));
                         for (int i = 0; i < length; i++)
                         {
                             int objRef = (int)ParseUnsignedInt(CopyOfRange(bytes,
@@ -344,7 +345,7 @@ namespace Claunia.PropertyList
                         int length = lengthAndOffset[0];
                         int contentOffset = lengthAndOffset[1];
 
-                        NSSet set = new NSSet();
+                        NSSet set = new NSSet(new BinaryOrigin(offset + contentOffset, length * objectRefSize));
                         for (int i = 0; i < length; i++)
                         {
                             int objRef = (int)ParseUnsignedInt(CopyOfRange(bytes,
@@ -362,7 +363,7 @@ namespace Claunia.PropertyList
                         int contentOffset = lengthAndOffset[1];
 
                         //System.out.println("Parsing dictionary #"+obj);
-                        NSDictionary dict = new NSDictionary();
+                        NSDictionary dict = new NSDictionary(new BinaryOrigin(offset + contentOffset, 2 * length * objectRefSize));
                         for (int i = 0; i < length; i++)
                         {
                             int keyRef = (int)ParseUnsignedInt(CopyOfRange(bytes,
